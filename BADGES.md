@@ -1,4 +1,4 @@
-# 🏅 Earn These Badges
+#  Earn These Badges
 
 ## Code Badges:
 `<img src="badges/first-pr.svg" width="100">` - First PR Merged
