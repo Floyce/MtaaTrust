@@ -85,6 +85,14 @@ export default function DashboardPage() {
                             >
                                 <LogOut className="h-4 w-4 mr-3" /> Sign Out
                             </Button>
+                            <Link href="/" className="block">
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start text-slate-400 hover:text-slate-600 mt-2"
+                                >
+                                    &larr; Back to Home
+                                </Button>
+                            </Link>
                         </nav>
                     </div>
 

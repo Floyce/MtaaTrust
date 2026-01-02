@@ -3,16 +3,16 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { 
-    LayoutDashboard, 
-    Briefcase, 
-    Wallet, 
-    Settings, 
-    LogOut, 
-    TrendingUp, 
-    Users, 
-    Star, 
-    CheckCircle2, 
+import {
+    LayoutDashboard,
+    Briefcase,
+    Wallet,
+    Settings,
+    LogOut,
+    TrendingUp,
+    Users,
+    Star,
+    CheckCircle2,
     XCircle,
     Clock,
     MoreHorizontal,
@@ -52,7 +52,7 @@ const INCOMING_REQUESTS = [
 ]
 
 const ACTIVE_JOBS = [
-     {
+    {
         id: "JOB-881",
         client: "Alice M.",
         location: "Kilimani",
@@ -74,7 +74,7 @@ export default function ProviderDashboardPage() {
                         <div className="h-8 w-8 bg-teal-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">M</div>
                         <span className="text-xl font-bold text-white">MtaaTrust Pro</span>
                     </div>
-                    
+
                     <nav className="space-y-2">
                         <SidebarItem icon={LayoutDashboard} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
                         <SidebarItem icon={Briefcase} label="Jobs & Requests" active={activeTab === 'jobs'} onClick={() => setActiveTab('jobs')} />
@@ -82,7 +82,7 @@ export default function ProviderDashboardPage() {
                         <SidebarItem icon={Settings} label="Profile & Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
                     </nav>
                 </div>
-                
+
                 <div className="mt-auto p-6 border-t border-slate-800">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-10 w-10 bg-teal-800 rounded-full flex items-center justify-center text-white font-bold">JO</div>
@@ -94,6 +94,11 @@ export default function ProviderDashboardPage() {
                     <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-950/30">
                         <LogOut className="h-4 w-4 mr-3" /> Sign Out
                     </Button>
+                    <Link href="/" className="block mt-2">
+                        <Button variant="ghost" className="w-full justify-start text-slate-500 hover:text-slate-300">
+                            &larr; Back to Home
+                        </Button>
+                    </Link>
                 </div>
             </aside>
 
@@ -155,7 +160,7 @@ export default function ProviderDashboardPage() {
                                                     <div className="text-xs text-slate-500">{req.date}</div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="bg-white p-3 rounded-lg border border-slate-200 mb-4 text-sm text-slate-600">
                                                 <span className="font-semibold text-slate-900 block mb-1">{req.service}</span>
                                                 "{req.description}"
@@ -185,9 +190,14 @@ export default function ProviderDashboardPage() {
                                                 <div className="text-xs text-slate-500 flex items-center gap-1 mb-3">
                                                     <Clock className="h-3 w-3" /> {job.date}
                                                 </div>
-                                                <Button size="sm" variant="outline" className="w-full h-8 text-xs">
-                                                    View Details
-                                                </Button>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <Button size="sm" variant="outline" className="h-8 text-xs">
+                                                        View Details
+                                                    </Button>
+                                                    <Button size="sm" className="h-8 text-xs bg-green-600 hover:bg-green-700 text-white" onClick={() => alert(`Initiating M-Pesa STK Push to ${job.client}...`)}>
+                                                        Request Payment
+                                                    </Button>
+                                                </div>
                                             </div>
                                         ))}
                                         <div className="p-4 bg-slate-50 rounded-b-xl text-center">
@@ -208,7 +218,7 @@ export default function ProviderDashboardPage() {
                         <p className="text-slate-500">Full job list and history implementation coming soon...</p>
                     </div>
                 )}
-                
+
                 {activeTab === 'earnings' && (
                     <div className="space-y-6 animate-in fade-in duration-500">
                         <h1 className="text-2xl font-bold text-slate-900">Earnings & Payouts</h1>
@@ -217,7 +227,7 @@ export default function ProviderDashboardPage() {
                 )}
 
                 {activeTab === 'settings' && (
-                     <div className="space-y-6 animate-in fade-in duration-500">
+                    <div className="space-y-6 animate-in fade-in duration-500">
                         <h1 className="text-2xl font-bold text-slate-900">Profile Settings</h1>
                         <Card>
                             <CardHeader>
@@ -247,7 +257,7 @@ export default function ProviderDashboardPage() {
 
 function SidebarItem({ icon: Icon, label, active, onClick }: { icon: any, label: string, active?: boolean, onClick: () => void }) {
     return (
-        <button 
+        <button
             onClick={onClick}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm
                 ${active ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}
