@@ -164,7 +164,7 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm">
                 <li>support@mtaatrust.co.ke</li>
-                <li>+254 700 000 000</li>
+                <li>+254 720538273</li>
               </ul>
             </div>
           </div>
