@@ -5,6 +5,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Star, ShieldCheck, Clock, Calendar, MessageSquare, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { BookingModal } from "@/components/booking-modal"
+import { BookingModal } from "@/components/booking-modal"
 
 // Mock Data for a single provider
 const MOCK_PROVIDER = {
@@ -173,36 +175,13 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
                 </div>
             </div>
 
-            {/* Mock Booking Modal */}
-            {isBooking && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-6">
-                        <div className="text-center">
-                            <div className="h-12 w-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Calendar className="h-6 w-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900">Request {provider.business}</h3>
-                            <p className="text-slate-500">Describe your job to get a quote.</p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <textarea
-                                className="w-full border rounded-xl p-3 h-32 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-                                placeholder="Hi, I need help with..."
-                            ></textarea>
-                            <Button className="w-full h-11 bg-teal-600 hover:bg-teal-700" onClick={() => {
-                                alert("Booking request sent! (Simulation)");
-                                setIsBooking(false);
-                            }}>
-                                Send Request
-                            </Button>
-                            <Button variant="ghost" className="w-full" onClick={() => setIsBooking(false)}>
-                                Cancel
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Booking Modal */}
+            <BookingModal
+                isOpen={isBooking}
+                onClose={() => setIsBooking(false)}
+                providerName={provider.name}
+                rate={provider.price}
+            />
         </div>
     )
 }
