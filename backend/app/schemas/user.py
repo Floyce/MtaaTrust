@@ -13,13 +13,14 @@ class TokenData(BaseModel):
 class UserBase(BaseModel):
     phone: str
     email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
     user_type: UserType
 
 class UserCreate(UserBase):
     password: str
 
 class UserLogin(BaseModel):
-    phone: str
+    login_identifier: str # Can be phone or email
     password: str
 
 class UserResponse(UserBase):

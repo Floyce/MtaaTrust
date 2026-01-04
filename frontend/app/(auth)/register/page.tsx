@@ -95,7 +95,7 @@ export default function RegisterPage() {
                     if (userType === 'provider') {
                         router.push("/provider/complete-profile") // Redirect to profile completion
                     } else {
-                        router.push("/dashboard")
+                        window.location.href = "/" // Redirect to Homepage (Consumer Dashboard)
                     }
                 } else {
                     router.push("/login?registered=true")

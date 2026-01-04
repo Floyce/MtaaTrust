@@ -69,14 +69,11 @@ export default function ConsumerDashboard() {
                         <section>
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-xl font-bold text-neutral-800">Active Jobs</h2>
-                                <Link href="/my-jobs" className="text-teal-600 font-medium hover:underline text-sm">
-                                    View All
-                                </Link>
                             </div>
 
                             <div className="space-y-4">
                                 {bookings.filter(b => b.status === 'confirmed').map((booking) => (
-                                    <Card key={booking.id} className="border-l-4 border-l-teal-500 shadow-sm hover:shadow-md transition-shadow">
+                                    <Card key={booking.id} className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
                                         <CardContent className="p-6">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex gap-4">
@@ -84,7 +81,7 @@ export default function ConsumerDashboard() {
                                                     <div>
                                                         <h3 className="font-bold text-neutral-900">{booking.service}</h3>
                                                         <p className="text-sm text-neutral-500">with {booking.provider}</p>
-                                                        <div className="flex items-center gap-2 mt-2 text-sm text-teal-700 bg-teal-50 w-fit px-2 py-1 rounded">
+                                                        <div className="flex items-center gap-2 mt-2 text-sm text-green-700 bg-green-50 w-fit px-2 py-1 rounded">
                                                             <Clock className="h-4 w-4" />
                                                             {booking.date}
                                                         </div>
@@ -100,7 +97,7 @@ export default function ConsumerDashboard() {
                                         <CardContent className="p-8 text-center text-neutral-500">
                                             <p>No active jobs right now.</p>
                                             <Link href="/providers">
-                                                <Button className="mt-4 bg-teal-600 hover:bg-teal-700">Find a Pro</Button>
+                                                <Button className="mt-4 bg-green-600 hover:bg-green-700">Find a Pro</Button>
                                             </Link>
                                         </CardContent>
                                     </Card>
@@ -159,7 +156,7 @@ export default function ConsumerDashboard() {
                                         icon={Camera}
                                         title="Scan Problem"
                                         desc="AI Diagnosis & Quote"
-                                        color="text-teal-600 bg-teal-50 hover:bg-teal-100 border-teal-200"
+                                        color="text-green-600 bg-green-50 hover:bg-green-100 border-green-200"
                                     />
                                 </Link>
                             </div>

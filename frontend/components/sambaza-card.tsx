@@ -35,18 +35,18 @@ export function SambazaCard({ group }: { group: SambazaGroupProps }) {
     }
 
     return (
-        <Card className="border-2 border-teal-100/50 hover:border-teal-500 transition-colors cursor-pointer group">
+        <Card className="border-2 border-green-100/50 hover:border-green-500 transition-colors cursor-pointer group">
             <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="text-lg font-bold text-slate-800 group-hover:text-teal-700 transition-colors">
+                        <CardTitle className="text-lg font-bold text-slate-800 group-hover:text-green-700 transition-colors">
                             {group.title}
                         </CardTitle>
                         <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                             <UsersRound className="h-3 w-3" /> {group.suburb}
                         </div>
                     </div>
-                    <div className="bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded-full">
+                    <div className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
                         {group.discountTier} OFF
                     </div>
                 </div>
@@ -60,7 +60,7 @@ export function SambazaCard({ group }: { group: SambazaGroupProps }) {
                     </div>
                     <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-teal-500 rounded-full transition-all duration-1000 ease-out"
+                            className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
                             style={{ width: `${percentage}%` }}
                         />
                     </div>

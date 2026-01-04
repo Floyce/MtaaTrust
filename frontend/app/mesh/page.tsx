@@ -1,147 +1,245 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
-import { CreateTeamDialog } from "@/components/mesh/create-team-dialog"
-import { api } from "@/lib/api"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Users, Briefcase, Plus, UserPlus, ShieldCheck } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
+import { Wifi, WifiOff, Smartphone, Radio, CloudOff, RefreshCw, Send, CheckCircle2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
-interface MeshMember {
-    id: string
-    user_id: number
-    role: string
-    status: string
-}
-
-interface MeshTeam {
+interface Peer {
     id: string
     name: string
-    description: string
-    specialization: string
-    leader_id: number
-    members: MeshMember[]
+    role: string
+    distance: string
+    signal: number
 }
 
-export default function MeshPage() {
-    const [teams, setTeams] = useState<MeshTeam[]>([])
-    const [loading, setLoading] = useState(true)
+const MOCK_PEERS: Peer[] = [
+    { id: "1", name: "Fundi John", role: "Plumber", distance: "15m", signal: 90 },
+    { id: "2", name: "Mama Pendo", role: "Vendor", distance: "45m", signal: 75 },
+    { id: "3", name: "Kevin Elec", role: "Electrician", distance: "120m", signal: 40 },
+]
 
+export default function MtaaMeshPage() {
+    const [isOffline, setIsOffline] = useState(false)
+    const [isScanning, setIsScanning] = useState(false)
+    const [peers, setPeers] = useState<Peer[]>([])
+    const [syncQueue, setSyncQueue] = useState<string[]>(["Job #1293 Payment", "Message to Client"])
+
+    // Effect to clear peers when switching modes
     useEffect(() => {
-        fetchTeams()
-    }, [])
+        setPeers([])
+        setIsScanning(false)
+    }, [isOffline])
 
-    const fetchTeams = async () => {
-        try {
-            const data = await api.get<MeshTeam[]>("/mesh/my-teams")
-            setTeams(data)
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setLoading(false)
+    const toggleScan = () => {
+        if (isScanning) {
+            setIsScanning(false)
+            return
         }
+
+        setIsScanning(true)
+        setPeers([])
+
+        // Simulate finding peers
+        setTimeout(() => {
+            setPeers([MOCK_PEERS[0]])
+        }, 1500)
+        setTimeout(() => {
+            setPeers([MOCK_PEERS[0], MOCK_PEERS[1]])
+        }, 3000)
     }
 
-    const inviteMember = async (teamId: string) => {
-        const email = prompt("Enter the email of the pro you want to invite:")
-        if (!email) return
-
-        try {
-            await api.post(`/mesh/${teamId}/invite`, { email })
-            alert(`Invite sent to ${email}!`)
-        } catch (error: any) {
-            alert(error.message || "Failed to invite user")
+    const handleSync = () => {
+        if (isOffline) {
+            alert("No internet connection! connect to Mesh or wait for data.")
+            return
         }
+        const initialCount = syncQueue.length
+        if (initialCount === 0) return
+
+        let synced = 0
+        const interval = setInterval(() => {
+            setSyncQueue(prev => prev.slice(1))
+            synced++
+            if (synced >= initialCount) clearInterval(interval)
+        }, 800)
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className={`min-h-screen transition-colors duration-500 ${isOffline ? 'bg-slate-950 text-emerald-50' : 'bg-slate-50 text-slate-900'}`}>
             <Navbar />
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
+            <main className="container mx-auto px-4 py-8">
+                {/* Header Control */}
+                <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                            Mtaa Mesh <Badge variant="secondary" className="bg-amber-100 text-amber-700">Beta</Badge>
+                        <h1 className="text-3xl font-bold flex items-center gap-3">
+                            <Radio className={`h-8 w-8 ${isOffline ? 'text-emerald-500' : 'text-blue-600'}`} />
+                            Mtaa Mesh
+                            {isOffline && <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50">OFFLINE MODE</Badge>}
                         </h1>
-                        <p className="text-slate-500 mt-1">Form squads, combine skills, and bid for bigger jobs.</p>
+                        <p className={`mt-2 ${isOffline ? 'text-slate-400' : 'text-slate-600'}`}>
+                            {isOffline
+                                ? "Connectivity severed. Using local Bluetooth mesh protocol."
+                                : "Connected to global internet. Mesh allows local discovery."}
+                        </p>
                     </div>
-                    <CreateTeamDialog />
+
+                    <div className="flex items-center gap-4 bg-slate-200/10 p-4 rounded-xl backdrop-blur-sm border border-slate-200/20">
+                        <span className={`text-sm font-bold ${isOffline ? 'text-emerald-400' : 'text-slate-600'}`}>
+                            {isOffline ? "GO ONLINE" : "GO OFFLINE"}
+                        </span>
+                        <Switch
+                            checked={isOffline}
+                            onCheckedChange={setIsOffline}
+                            className="data-[state=checked]:bg-emerald-500"
+                        />
+                    </div>
                 </div>
 
-                {loading ? (
-                    <div className="text-center py-20 text-slate-400">Loading your squads...</div>
-                ) : teams.length === 0 ? (
-                    <Card className="border-dashed border-2 border-slate-300 bg-slate-50/50">
-                        <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-                            <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                                <Users className="h-10 w-10 text-slate-400" />
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {/* Radar / Peer Discovery */}
+                    <Card className={`lg:col-span-2 border-none shadow-2xl overflow-hidden relative ${isOffline ? 'bg-slate-900/50' : 'bg-white'}`}>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.2)_100%)] pointer-events-none" />
+
+                        <CardHeader>
+                            <CardTitle className={isOffline ? 'text-white' : 'text-slate-900'}>Nearby Mesh Nodes</CardTitle>
+                            <CardDescription>Providers and clients within range</CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="min-h-[400px] flex flex-col items-center justify-center relative">
+                            {/* Scanning Animation */}
+                            <div className="relative w-64 h-64 flex items-center justify-center">
+                                {/* Rings */}
+                                <div className={`absolute inset-0 border-2 rounded-full opacity-20 ${isOffline ? 'border-emerald-500' : 'border-blue-500'}`} />
+                                <div className={`absolute inset-12 border-2 rounded-full opacity-40 ${isOffline ? 'border-emerald-500' : 'border-blue-500'}`} />
+                                <div className={`absolute inset-24 border-2 rounded-full opacity-60 ${isOffline ? 'border-emerald-500' : 'border-blue-500'}`} />
+
+                                {/* Radar Sweep */}
+                                {isScanning && (
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-transparent to-emerald-500/20"
+                                        style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 50%)" }}
+                                    />
+                                )}
+
+                                {/* Center Point */}
+                                <div className={`w-4 h-4 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] z-10 ${isOffline ? 'bg-emerald-500' : 'bg-blue-600'}`} />
+
+                                {/* Peers */}
+                                <AnimatePresence>
+                                    {peers.map((peer, i) => (
+                                        <motion.div
+                                            key={peer.id}
+                                            initial={{ scale: 0, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="absolute"
+                                            style={{
+                                                top: `${20 + (i * 25)}%`,
+                                                left: `${20 + (i * 30)}%`
+                                            }}
+                                        >
+                                            <div className="flex flex-col items-center gap-1 group cursor-pointer">
+                                                <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-emerald-400 flex items-center justify-center">
+                                                    <Smartphone className="h-4 w-4 text-emerald-400" />
+                                                </div>
+                                                <Badge className="bg-emerald-900/80 text-emerald-200 border-0 backdrop-blur-sm">
+                                                    {peer.name}
+                                                </Badge>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
                             </div>
-                            <h3 className="text-xl font-semibold text-slate-900 mb-2">You haven't joined any squads yet</h3>
-                            <p className="text-slate-500 max-w-md mb-6">
-                                Create a squad to start working with other pros, or ask a squad leader to invite you.
-                            </p>
-                            <CreateTeamDialog />
+
+                            <Button
+                                onClick={toggleScan}
+                                size="lg"
+                                className={`mt-12 w-48 font-bold ${isScanning
+                                        ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
+                                        : isOffline ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'
+                                    }`}
+                            >
+                                {isScanning ? "STOP SCANNING" : "SCAN FOR PEERS"}
+                            </Button>
                         </CardContent>
                     </Card>
-                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {teams.map((team) => (
-                            <Card key={team.id} className="hover:shadow-md transition-shadow cursor-pointer group">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">{team.name}</CardTitle>
-                                            <CardDescription className="flex items-center gap-1 mt-1">
-                                                <Briefcase className="h-3 w-3" /> {team.specialization}
-                                            </CardDescription>
-                                        </div>
-                                        <Badge variant="outline" className="bg-slate-50">
-                                            {team.leader_id === 1 ? "Leader" : "Member"}
-                                            {/* Note: In real app compare with current user ID */}
-                                        </Badge>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-slate-600 mb-6 line-clamp-2">
-                                        {team.description || "No description provided."}
-                                    </p>
 
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex -space-x-2">
-                                            {[1, 2, 3].map((_, i) => (
-                                                <Avatar key={i} className="border-2 border-white w-8 h-8">
-                                                    <AvatarFallback className="bg-slate-200 text-xs text-slate-600">M{i}</AvatarFallback>
-                                                </Avatar>
-                                            ))}
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs text-slate-500 font-medium">
-                                                +2
-                                            </div>
-                                        </div>
-                                        <div className="text-xs text-slate-500 font-medium">
-                                            5 Active Members
-                                        </div>
+                    {/* Sync & Offline Actions */}
+                    <div className="space-y-6">
+                        {/* Status Card */}
+                        <Card className={`${isOffline ? 'bg-slate-900 text-white border-slate-800' : 'bg-white'}`}>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    {isOffline ? <WifiOff className="text-red-500" /> : <Wifi className="text-green-500" />}
+                                    Network Status
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center p-3 rounded-lg bg-slate-500/10">
+                                        <span className="text-sm opacity-80">Signal Strength</span>
+                                        <span className="font-mono font-bold">{isOffline ? '0%' : 'LTE 4G'}</span>
                                     </div>
-                                </CardContent>
-                                <CardFooter className="bg-slate-50/50 border-t p-4 flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        className="w-full text-xs"
-                                        onClick={() => inviteMember(team.id)}
-                                    >
-                                        <UserPlus className="mr-2 h-3 w-3" /> Invite Pro
-                                    </Button>
-                                    <Button className="w-full text-xs bg-slate-900 text-white">
-                                        <ShieldCheck className="mr-2 h-3 w-3" /> View Jobs
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
+                                    <div className="flex justify-between items-center p-3 rounded-lg bg-slate-500/10">
+                                        <span className="text-sm opacity-80">Mesh Peers</span>
+                                        <span className="font-mono font-bold">{peers.length} active</span>
+                                    </div>
+                                    {isOffline && (
+                                        <Button variant="destructive" className="w-full">
+                                            <Send className="mr-2 h-4 w-4" /> Send Emergency SMS
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Sync Queue */}
+                        <Card className={`${isOffline ? 'bg-slate-900 text-white border-slate-800' : 'bg-white'}`}>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    <CloudOff className={syncQueue.length > 0 ? "text-amber-500" : "text-slate-400"} />
+                                    Sync Queue
+                                </CardTitle>
+                                <CardDescription>Data waiting for connection</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {syncQueue.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-6 text-slate-500">
+                                        <CheckCircle2 className="h-10 w-10 mb-2 opacity-50" />
+                                        <p className="text-sm">All synced up!</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {syncQueue.map((item, i) => (
+                                            <div key={i} className="flex items-center justify-between p-3 rounded bg-amber-500/10 border border-amber-500/20 text-sm">
+                                                <span>{item}</span>
+                                                <span className="text-xs uppercase font-bold text-amber-500">Pending</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                            <CardContent className="pt-0">
+                                <Button
+                                    onClick={handleSync}
+                                    disabled={syncQueue.length === 0 || isOffline}
+                                    className="w-full bg-slate-800 hover:bg-slate-700"
+                                >
+                                    <RefreshCw className={`mr-2 h-4 w-4 ${!isOffline && syncQueue.length > 0 ? 'animate-spin' : ''}`} />
+                                    Sync Now
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </div>
-                )}
-            </div>
+                </div>
+            </main>
         </div>
     )
 }

@@ -40,8 +40,8 @@ export function Navbar() {
         <Link
             href={href}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(href)
-                    ? "bg-green-100 text-green-900"
-                    : "text-green-700 hover:bg-green-50"
+                ? "bg-green-100 text-green-900"
+                : "text-green-700 hover:bg-green-50"
                 }`}
             onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -58,8 +58,8 @@ export function Navbar() {
         <Link
             href={href}
             className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${isActive(href)
-                    ? "text-primary bg-green-50"
-                    : "text-gray-600 hover:text-primary hover:bg-green-50/50"
+                ? "text-primary bg-green-50"
+                : "text-gray-600 hover:text-primary hover:bg-green-50/50"
                 }`}
         >
             {children}
@@ -68,14 +68,13 @@ export function Navbar() {
 
     const handleListServiceClick = () => {
         if (!user) {
-            // Option A: Not logged in
-            // Show custom dialog content for distinct actions
+            // Not logged in -> Show Provider Modal
             setIsListServiceOpen(true);
         } else if (user.user_type === "consumer") {
-            // Option B: Consumer
+            // Consumer -> Show Switch Modal
             setIsListServiceOpen(true);
         } else if (user.user_type === "provider") {
-            // Option C: Provider -> Dashboard
+            // Provider -> Go to Dashboard
             router.push("/provider-dashboard");
         }
     }
@@ -97,7 +96,7 @@ export function Navbar() {
                 <div className="hidden md:flex gap-2 items-center">
                     {user ? (
                         <>
-                            <NavTab href={user.user_type === 'provider' ? "/provider-dashboard" : "/dashboard"}>Dashboard</NavTab>
+                            <NavTab href={user.user_type === 'provider' ? "/provider-dashboard" : "/"}>Dashboard</NavTab>
                             <NavTab href="/providers">Find Pros</NavTab>
                             <NavTab href="/my-jobs">My Jobs</NavTab>
                             <NavTab href="/messages">Messages</NavTab>
@@ -124,6 +123,7 @@ export function Navbar() {
                         </>
                     ) : (
                         <div className="flex items-center gap-4">
+                            {/* Only show List Service / Provider Console if appropriate */}
                             <Button variant="outline" size="sm" onClick={handleListServiceClick} className="hidden lg:flex border-primary/20 text-primary hover:bg-primary hover:text-white">
                                 {user.user_type === 'provider' ? 'Provider Console' : 'List Service'}
                             </Button>
@@ -142,7 +142,7 @@ export function Navbar() {
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={() => router.push(user.user_type === 'provider' ? '/provider-dashboard' : '/dashboard')}>
+                                    <DropdownMenuItem onClick={() => router.push(user.user_type === 'provider' ? '/provider-dashboard' : '/')}>
                                         Dashboard
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => router.push('/profile')}>
@@ -176,15 +176,19 @@ export function Navbar() {
                                 <p className="font-semibold text-primary">{user.full_name}</p>
                                 <p className="text-xs text-green-700/70 capitalize">{user.user_type}</p>
                             </div>
-                            <MobileMenuItem href={user.user_type === 'provider' ? "/provider-dashboard" : "/dashboard"} icon={Home}>
+                            <MobileMenuItem href={user.user_type === 'provider' ? "/provider-dashboard" : "/"} icon={Home}>
                                 Dashboard
                             </MobileMenuItem>
                             <MobileMenuItem href="/providers" icon={Search}>Find Pros</MobileMenuItem>
-                            <MobileMenuItem href="/my-jobs" icon={Briefcase}>My Jobs</MobileMenuItem>
-                            <MobileMenuItem href="/messages" icon={MessageSquare}>Messages</MobileMenuItem>
-                            {user.user_type === 'provider' && (
-                                <MobileMenuItem href="/calendar" icon={Calendar}>My Calendar</MobileMenuItem>
-                            )}
+
+                            {/* Restored Feature Links */}
+                            <div className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider my-2">Explore</div>
+                            <MobileMenuItem href="/scan" icon={Briefcase}>Mtaa Scan AI</MobileMenuItem>
+                            <MobileMenuItem href="/pesa-predict" icon={Briefcase}>Pesa Predict</MobileMenuItem>
+                            <MobileMenuItem href="/mesh" icon={Briefcase}>Mtaa Mesh</MobileMenuItem>
+                            <MobileMenuItem href="/sambaza" icon={Users}>Sambaza Deals</MobileMenuItem>
+                            <div className="h-px bg-gray-100 my-2" />
+
                             <MobileMenuItem href="/profile" icon={User}>Profile</MobileMenuItem>
                             <button
                                 onClick={logout}
@@ -198,6 +202,14 @@ export function Navbar() {
                             <MobileMenuItem href="/" icon={Home}>Home</MobileMenuItem>
                             <MobileMenuItem href="/providers" icon={Search}>Find Pros</MobileMenuItem>
                             <div className="h-px bg-gray-100 my-2" />
+
+                            {/* Restored Feature Links for Guests too */}
+                            <div className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Features</div>
+                            <MobileMenuItem href="/scan" icon={Briefcase}>Mtaa Scan AI</MobileMenuItem>
+                            <MobileMenuItem href="/pesa-predict" icon={Briefcase}>Pesa Predict</MobileMenuItem>
+                            <MobileMenuItem href="/mesh" icon={Briefcase}>Mtaa Mesh</MobileMenuItem>
+                            <div className="h-px bg-gray-100 my-2" />
+
                             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                                 <Button variant="ghost" className="w-full justify-start">Login</Button>
                             </Link>
@@ -214,27 +226,28 @@ export function Navbar() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            {!user ? "Want to offer your services?" : "Switch to Provider Account?"}
+                            {!user ? "Offer Your Services" : "Join the Provider Network"}
                         </DialogTitle>
                         <DialogDescription>
                             {!user
-                                ? "Join MtaaTrust to reach more customers and grow your business."
-                                : "You are currently logged in as a consumer. Do you want to create a provider profile?"}
+                                ? "Sign up to reach more customers or login to manage your provider account."
+                                : "You are currently logged in as a consumer. Upgrade to a provider account to start earning?"}
                         </DialogDescription>
                     </DialogHeader>
 
                     {!user ? (
                         <div className="flex flex-col gap-3 py-4">
-                            <Button onClick={() => { setIsListServiceOpen(false); router.push('/login?type=provider'); }}>
-                                Login as Provider
-                            </Button>
-                            <Button variant="outline" onClick={() => { setIsListServiceOpen(false); router.push('/register?type=provider'); }}>
+                            <Button onClick={() => { setIsListServiceOpen(false); router.push('/register?type=provider'); }} className="bg-primary hover:bg-primary/90">
                                 Sign Up as Provider
+                            </Button>
+                            <Button variant="outline" onClick={() => { setIsListServiceOpen(false); router.push('/login?type=provider'); }}>
+                                Login as Provider
                             </Button>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-3 py-4">
-                            <Button onClick={() => { setIsListServiceOpen(false); router.push('/profile/upgrade'); }}>
+                            {/* Assuming upgrade flow exists, otherwise redirect to provider reg */}
+                            <Button onClick={() => { setIsListServiceOpen(false); router.push('/provider/complete-profile'); }}>
                                 Create Provider Profile
                             </Button>
                             <DialogClose asChild>

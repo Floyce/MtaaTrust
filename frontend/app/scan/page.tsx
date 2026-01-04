@@ -21,6 +21,39 @@ interface ScanResult {
     description: string
 }
 
+const MOCK_RESULTS: ScanResult[] = [
+    {
+        issue_detected: "Leaking Pipe Joint",
+        confidence: 0.98,
+        category: "Plumbing",
+        estimated_price_min: 1500,
+        estimated_price_max: 3000,
+        urgency: "High",
+        materials_needed: [{ name: "PVC Elbow Joint", estimated_price: 350 }, { name: "Plumber's Tape", estimated_price: 150 }],
+        description: "Severe leak detected at the elbow joint. Immediate repair recommended to prevent water damage."
+    },
+    {
+        issue_detected: "Exposed Wiring",
+        confidence: 0.92,
+        category: "Electrical",
+        estimated_price_min: 2500,
+        estimated_price_max: 5000,
+        urgency: "Critical",
+        materials_needed: [{ name: "Insulation Tape", estimated_price: 100 }, { name: "Wire Connectors", estimated_price: 200 }],
+        description: "Dangerous exposed wiring detected. Risk of shock or fire. Do not touch."
+    },
+    {
+        issue_detected: "Cracked Wall Plaster",
+        confidence: 0.85,
+        category: "Masonry",
+        estimated_price_min: 5000,
+        estimated_price_max: 8000,
+        urgency: "Medium",
+        materials_needed: [{ name: "Filler Compound", estimated_price: 800 }, { name: "Paint", estimated_price: 1200 }],
+        description: "Structural integrity seems intact, but plaster is degrading. Cosmetic repair needed."
+    }
+];
+
 export default function MtaaScanPage() {
     const webcamRef = useRef<Webcam>(null)
     const [imgSrc, setImgSrc] = useState<string | null>(null)
@@ -54,22 +87,12 @@ export default function MtaaScanPage() {
         setResult(null)
 
         try {
-            // Convert base64 to blob/file for upload if needed
-            // For now, our mock backend just needs any file
-            const blob = await fetch(base64Image).then(r => r.blob())
-            const file = fileObj || new File([blob], "scan.jpg", { type: "image/jpeg" })
+            // Simulate AI Delay
+            await new Promise(r => setTimeout(r, 2500))
 
-            const formData = new FormData()
-            formData.append("file", file)
-
-            const response = await api.post<ScanResult>("/scan/analyze", formData, undefined) // passing true force multipart
-            // Custom api wrapper might not handle FormData auto-content-type well depending on implementation
-            // Assuming standard fetch or axios wrapper:
-
-            // Simulating a delay for the "Scanning" animation effect if backend is too fast
-            await new Promise(r => setTimeout(r, 2000))
-
-            setResult(response)
+            // Randomly select a mock result
+            const randomResult = MOCK_RESULTS[Math.floor(Math.random() * MOCK_RESULTS.length)]
+            setResult(randomResult)
 
         } catch (error) {
             console.error(error)
@@ -91,7 +114,7 @@ export default function MtaaScanPage() {
 
             <main className="flex-1 container mx-auto px-4 py-8 flex flex-col items-center justify-center max-w-lg">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-400">
                         Mtaa Scan AI
                     </h1>
                     <p className="text-slate-400 mt-2">
@@ -120,10 +143,10 @@ export default function MtaaScanPage() {
                                         />
                                         {/* HUD Overlay */}
                                         <div className="absolute inset-0 pointer-events-none">
-                                            <div className="absolute top-8 left-8 w-16 h-16 border-t-4 border-l-4 border-emerald-500/50 rounded-tl-xl" />
-                                            <div className="absolute top-8 right-8 w-16 h-16 border-t-4 border-r-4 border-emerald-500/50 rounded-tr-xl" />
-                                            <div className="absolute bottom-8 left-8 w-16 h-16 border-b-4 border-l-4 border-emerald-500/50 rounded-bl-xl" />
-                                            <div className="absolute bottom-8 right-8 w-16 h-16 border-b-4 border-r-4 border-emerald-500/50 rounded-br-xl" />
+                                            <div className="absolute top-8 left-8 w-16 h-16 border-t-4 border-l-4 border-green-500/50 rounded-tl-xl" />
+                                            <div className="absolute top-8 right-8 w-16 h-16 border-t-4 border-r-4 border-green-500/50 rounded-tr-xl" />
+                                            <div className="absolute bottom-8 left-8 w-16 h-16 border-b-4 border-l-4 border-green-500/50 rounded-bl-xl" />
+                                            <div className="absolute bottom-8 right-8 w-16 h-16 border-b-4 border-r-4 border-green-500/50 rounded-br-xl" />
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="w-64 h-64 border border-white/20 rounded-lg animate-pulse" />
                                             </div>
@@ -131,7 +154,7 @@ export default function MtaaScanPage() {
                                     </>
                                 ) : (
                                     <div className="flex-1 flex items-center justify-center bg-slate-800">
-                                        <label className="cursor-pointer flex flex-col items-center gap-4 p-8 border-2 border-dashed border-slate-600 rounded-xl hover:border-emerald-500 transition-colors">
+                                        <label className="cursor-pointer flex flex-col items-center gap-4 p-8 border-2 border-dashed border-slate-600 rounded-xl hover:border-green-500 transition-colors">
                                             <Upload className="h-12 w-12 text-slate-400" />
                                             <span className="text-slate-300 font-medium">Click to Upload Image</span>
                                             <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
@@ -178,22 +201,22 @@ export default function MtaaScanPage() {
                                     {isAnalyzing ? (
                                         <div className="flex flex-col items-center justify-center h-full space-y-4">
                                             <div className="relative w-24 h-24">
-                                                <div className="absolute inset-0 border-t-4 border-emerald-500 rounded-full animate-spin" />
-                                                <div className="absolute inset-2 border-r-4 border-cyan-500 rounded-full animate-spin reverse" />
+                                                <div className="absolute inset-0 border-t-4 border-green-500 rounded-full animate-spin" />
+                                                <div className="absolute inset-2 border-r-4 border-emerald-500 rounded-full animate-spin reverse" />
                                                 <div className="absolute inset-0 flex items-center justify-center">
                                                     <Wrench className="h-8 w-8 text-white animate-pulse" />
                                                 </div>
                                             </div>
-                                            <p className="text-emerald-400 font-mono animate-pulse">ANALYZING GEOMETRY...</p>
+                                            <p className="text-green-400 font-mono animate-pulse">ANALYZING GEOMETRY...</p>
                                         </div>
                                     ) : result ? (
                                         <div className="space-y-6">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-1 rounded uppercase">
+                                                    <span className="bg-green-500/20 text-green-400 text-xs font-bold px-2 py-1 rounded uppercase">
                                                         {result.category}
                                                     </span>
-                                                    <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-1 rounded uppercase">
+                                                    <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${result.urgency === 'Critical' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                                         {result.urgency} Urgency
                                                     </span>
                                                 </div>
@@ -221,8 +244,8 @@ export default function MtaaScanPage() {
                                                 ))}
                                             </div>
 
-                                            <Link href="/dashboard">
-                                                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-lg">
+                                            <Link href={`/providers?category=${result.category}`}>
+                                                <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12 text-lg">
                                                     Book a {result.category} Pro
                                                     <ArrowRight className="ml-2 h-5 w-5" />
                                                 </Button>

@@ -1,7 +1,23 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, providers, payments
+from app.api.v1.endpoints import auth, providers, payments, reviews, users, emergency, bookings, support, sambaza, estate, supply, portfolio, invoices, family, scan, mesh, subscriptions, alerts, jifunze
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(providers.router, prefix="/providers", tags=["providers"])
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
+api_router.include_router(reviews.router, prefix="/reviews", tags=["reviews"])
+api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(emergency.router, prefix="/emergency", tags=["emergency"])
+api_router.include_router(bookings.router, prefix="/bookings", tags=["bookings"])
+api_router.include_router(support.router, prefix="/support", tags=["support"])
+api_router.include_router(sambaza.router, prefix="/sambaza", tags=["sambaza"])
+api_router.include_router(estate.router, prefix="/estate", tags=["estate"])
+api_router.include_router(supply.router, prefix="/supply", tags=["supply"])
+api_router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
+api_router.include_router(invoices.router, prefix="/invoices", tags=["invoices"])
+api_router.include_router(family.router, prefix="/family", tags=["family"])
+api_router.include_router(scan.router, prefix="/scan", tags=["scan"])
+api_router.include_router(mesh.router, prefix="/mesh", tags=["mesh"])
+api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
+api_router.include_router(alerts.router, prefix="/alerts", tags=["alerts"])
+api_router.include_router(jifunze.router, prefix="/jifunze", tags=["jifunze"])

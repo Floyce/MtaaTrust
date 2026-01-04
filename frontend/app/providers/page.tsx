@@ -91,10 +91,17 @@ export default function ProvidersPage() {
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             {/* Header / Search Section */}
-            <div className="bg-teal-700 text-white pt-24 pb-12 px-6">
+            <div className="bg-green-700 text-white pt-24 pb-12 px-6 relative">
+                <div className="absolute top-4 left-4 md:top-8 md:left-8">
+                    <Link href="/dashboard">
+                        <Button variant="ghost" className="text-white hover:bg-green-800 hover:text-white flex items-center gap-2">
+                            ← Back
+                        </Button>
+                    </Link>
+                </div>
                 <div className="max-w-7xl mx-auto text-center space-y-6">
                     <h1 className="text-3xl md:text-5xl font-bold">Find Trusted Local Pros</h1>
-                    <p className="text-teal-100 text-lg max-w-2xl mx-auto">
+                    <p className="text-green-50 text-lg max-w-2xl mx-auto">
                         Search over 500+ verified service providers in Nairobi.
                         From plumbers to electricians, we've got you covered.
                     </p>
@@ -120,7 +127,7 @@ export default function ProvidersPage() {
                                 onChange={(e) => setLocationTerm(e.target.value)}
                             />
                         </div>
-                        <Button className="h-12 px-8 bg-teal-600 hover:bg-teal-500 text-white rounded-xl">
+                        <Button className="h-12 px-8 bg-green-600 hover:bg-green-500 text-white rounded-xl">
                             Search
                         </Button>
                     </div>
@@ -151,8 +158,8 @@ export default function ProvidersPage() {
                         <h3 className="text-sm font-medium text-slate-900">Price Range</h3>
                         <div className="space-y-2">
                             {['Under KES 1000', 'KES 1000 - 5000', 'KES 5000+'].map((price) => (
-                                <label key={price} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-teal-600">
-                                    <input type="checkbox" className="rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
+                                <label key={price} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-green-600">
+                                    <input type="checkbox" className="rounded border-slate-300 text-green-600 focus:ring-green-500" />
                                     {price}
                                 </label>
                             ))}

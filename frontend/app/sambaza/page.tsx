@@ -80,7 +80,7 @@ export default function SambazaPage() {
             <main className="max-w-7xl mx-auto px-6 py-10">
                 {/* Hero Section */}
                 <div className="mb-12 text-center space-y-4">
-                    <span className="bg-teal-100 text-teal-800 text-sm font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    <span className="bg-green-100 text-green-800 text-sm font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                         Coming Together Pay Less
                     </span>
                     <h1 className="text-4xl font-extrabold text-slate-900">
@@ -98,7 +98,7 @@ export default function SambazaPage() {
                         <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
                         <Input
                             placeholder="Find deals in your suburb..."
-                            className="pl-10 h-11"
+                            className="pl-10 h-11 focus-visible:ring-green-600"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -106,7 +106,7 @@ export default function SambazaPage() {
 
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogTrigger asChild>
-                            <Button className="h-11 bg-teal-600 hover:bg-teal-700 w-full md:w-auto font-semibold">
+                            <Button className="h-11 bg-green-700 hover:bg-green-800 w-full md:w-auto font-semibold">
                                 <Plus className="mr-2 h-5 w-5" /> Start New Group
                             </Button>
                         </DialogTrigger>
@@ -126,7 +126,7 @@ export default function SambazaPage() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button onClick={handleCreate} className="bg-teal-600">Create & Share</Button>
+                                <Button onClick={handleCreate} className="bg-green-700 hover:bg-green-800">Create & Share</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -135,7 +135,20 @@ export default function SambazaPage() {
                 {/* Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {MOCK_GROUPS.map(group => (
-                        <SambazaCard key={group.id} group={group} />
+                        <div key={group.id} className="relative">
+                            <SambazaCard group={group} />
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="absolute top-4 right-4 bg-white/90 hover:bg-white text-green-700 border-green-200"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(`https://mtaatrust.com/sambaza/${group.id}`)
+                                    alert("Link copied! Share it with your neighbors.")
+                                }}
+                            >
+                                <Share2 className="h-4 w-4 mr-2" /> Share
+                            </Button>
+                        </div>
                     ))}
                 </div>
             </main>

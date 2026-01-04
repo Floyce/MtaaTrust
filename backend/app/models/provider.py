@@ -3,6 +3,9 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey, Boolean, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+# Import association model to ensure it's registered
+from app.models.provider_badge import ProviderBadge
+from app.models.badge import Badge
 
 class Provider(Base):
     __tablename__ = "providers"
@@ -43,3 +46,4 @@ class Provider(Base):
     verification_notes = Column(Text, nullable=True)
     
     user = relationship("User", backref="provider_profile")
+    badges = relationship("Badge", secondary="provider_badges", backref="providers")

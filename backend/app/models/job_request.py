@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Text, ARRAY, func
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Text, ARRAY, func, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from geoalchemy2 import Geography
 from app.core.database import Base
@@ -15,12 +15,16 @@ class JobRequest(Base):
     photos = Column(ARRAY(String), default=[])
     
     # Location
-    location = Column(Geography(geometry_type='POINT', srid=4326), nullable=True)
+    lat = Column(Float, nullable=True)
+    lng = Column(Float, nullable=True)
+    # location = Column(Geography(geometry_type='POINT', srid=4326), nullable=True)
     suburb = Column(String, nullable=False, index=True)
     address = Column(Text, nullable=True)
     
     # Details
     urgency = Column(String, default="normal")
+    is_emergency = Column(Boolean, default=False)
+    emergency_fee = Column(Float, default=0.0)
     preferred_date = Column(DateTime(timezone=True), nullable=True)
     budget_min = Column(Float, nullable=True)
     budget_max = Column(Float, nullable=True)
