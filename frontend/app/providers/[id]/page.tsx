@@ -4,8 +4,9 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Star, ShieldCheck, Clock, Calendar, MessageSquare, ArrowLeft, CheckCircle2 } from "lucide-react"
-import { BookingModal } from "@/components/booking-modal"
+import { MapPin, Star, ShieldCheck, Clock, Calendar, MessageSquare, ArrowLeft, CheckCircle2, Truck } from "lucide-react"
+
+import { BeforeAfterSlider } from "@/components/before-after-slider"
 import { BookingModal } from "@/components/booking-modal"
 
 // Mock Data for a single provider
@@ -38,8 +39,6 @@ const MOCK_PROVIDER = {
 }
 
 export default function ProviderProfilePage({ params }: { params: { id: string } }) {
-    const [isBooking, setIsBooking] = useState(false)
-
     // In a real app we would fetch data based on params.id
     const provider = MOCK_PROVIDER
 
@@ -145,6 +144,69 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
                                 ))}
                             </div>
                         </div>
+
+                        {/* Work Showcase Section */}
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-6">
+                            <h2 className="text-xl font-bold text-slate-900">Work Showcase</h2>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <BeforeAfterSlider
+                                    title="Living Room Rewiring"
+                                    description="Complete overhaul of 1980s wiring to modern standards."
+                                    beforeImage="https://images.unsplash.com/photo-1565514020121-197170a4dc0e?auto=format&fit=crop&q=80&w=400"
+                                    afterImage="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400"
+                                />
+                                <BeforeAfterSlider
+                                    title="Ambient Lighting"
+                                    description="Installed warm LED strips for a cozy atmosphere."
+                                    beforeImage="https://images.unsplash.com/photo-1560448204-61dc36dc98c8?auto=format&fit=crop&q=80&w=400"
+                                    afterImage="https://images.unsplash.com/photo-1513506003013-459a45d58731?auto=format&fit=crop&q=80&w=400"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Supply Chain Integration Widget */}
+                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-sm text-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-10">
+                                <Truck className="h-32 w-32" />
+                            </div>
+                            <div className="relative z-10">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <span className="bg-yellow-400 text-slate-900 text-xs px-2 py-0.5 rounded font-bold">PARTNER DEALS</span>
+                                    Buy Materials Nearby
+                                </h2>
+                                <p className="text-slate-300 mb-6 max-w-lg">
+                                    Need parts for this job? We've partnered with verified hardware stores in {provider.location.split(',')[0]} to give you exclusive discounts.
+                                </p>
+
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    {/* Mock Store 1 */}
+                                    <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="font-bold">Kilimani Electricals</div>
+                                            <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">5% OFF</span>
+                                        </div>
+                                        <div className="text-xs text-slate-400 flex items-center gap-1">
+                                            <MapPin className="h-3 w-3" /> 0.5km away
+                                        </div>
+                                    </div>
+
+                                    {/* Mock Store 2 */}
+                                    <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="font-bold">PowerFix Hardware</div>
+                                            <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">Verified</span>
+                                        </div>
+                                        <div className="text-xs text-slate-400 flex items-center gap-1">
+                                            <MapPin className="h-3 w-3" /> 1.2km away
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Button variant="link" className="text-yellow-400 p-0 h-auto mt-4 hover:text-yellow-300 text-sm">
+                                    View all 5 hardware stores in Kilimani &rarr;
+                                </Button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Booking Sidebar / Floating Action */}
@@ -156,9 +218,19 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
                             </div>
 
                             <div className="space-y-3">
-                                <Button className="w-full h-12 text-lg bg-teal-600 hover:bg-teal-700" onClick={() => setIsBooking(true)}>
-                                    Book Now
-                                </Button>
+                                {/* Using BookingModal wrapper around the custom button */}
+                                <BookingModal
+                                    providerId={provider.id}
+                                    providerName={provider.name}
+                                    serviceName={provider.category}
+                                    basePrice={3500}
+                                    trigger={
+                                        <Button className="w-full h-12 text-lg bg-teal-600 hover:bg-teal-700">
+                                            Book Now
+                                        </Button>
+                                    }
+                                />
+
                                 <Button variant="outline" className="w-full h-12 text-teal-700 border-teal-200 hover:bg-teal-50">
                                     <MessageSquare className="h-4 w-4 mr-2" /> Chat with {provider.name.split(' ')[0]}
                                 </Button>
@@ -174,14 +246,6 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
                     </div>
                 </div>
             </div>
-
-            {/* Booking Modal */}
-            <BookingModal
-                isOpen={isBooking}
-                onClose={() => setIsBooking(false)}
-                providerName={provider.name}
-                rate={provider.price}
-            />
         </div>
     )
 }

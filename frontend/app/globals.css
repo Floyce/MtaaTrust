@@ -3,6 +3,32 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Primary Brand Green (Dominant) */
+    --mt-green-900: #0A5C36;
+    --mt-green-700: #0D8A43;
+    --mt-green-500: #10B650;
+    --mt-green-300: #4CD97F;
+    --mt-green-100: #E6F7EC;
+
+    /* Cream Accent */
+    --mt-cream: #FFF9E6;
+
+    /* Neutrals */
+    --mt-black: #1A1A1A;
+    --mt-gray-800: #333333;
+    --mt-gray-500: #666666;
+    --mt-gray-300: #CCCCCC;
+    --mt-gray-100: #F5F5F5;
+    --mt-white: #FFFFFF;
+
+    /* Status Colors */
+    --mt-success: #10B981;
+    --mt-warning: #F59E0B;
+    --mt-error: #EF4444;
+    --mt-info: #3B82F6;
+  }
+
   body {
     @apply bg-background text-text-primary antialiased;
   }

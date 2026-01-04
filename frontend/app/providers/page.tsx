@@ -5,11 +5,12 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge" // Need to check if Badge exists, if not I'll just use a styled span or create it.
+// import { Badge } from "@/components/ui/badge" - Removed as unused and missing
 // Assuming Badge doesn't exist yet based on previous file list. I'll use standard Tailwind for now or create a simple Badge component if needed.
 // actually, I'll stick to Tailwind classes for badges to avoid dependency issues for now.
 import { Search, MapPin, Star, Filter, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { BookingModal } from "@/components/booking-modal"
 
 // Mock Data
 const MOCK_PROVIDERS = [
@@ -24,7 +25,11 @@ const MOCK_PROVIDERS = [
         price: "KES 500 - 5000",
         verified: true,
         image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juma",
-        tags: ["Wiring", "Repairs", "Installation"]
+        tags: ["Wiring", "Repairs", "Installation"],
+        badges: [
+            { name: "Verified Pro", icon: "🛡️", color: "bg-blue-100 text-blue-700" },
+            { name: "NCA Accredited", icon: "👷", color: "bg-orange-100 text-orange-700" }
+        ]
     },
     {
         id: "2",
@@ -67,7 +72,10 @@ const MOCK_PROVIDERS = [
     }
 ]
 
+import { useRouter } from "next/navigation"
+
 export default function ProvidersPage() {
+    const router = useRouter()
     const [searchTerm, setSearchTerm] = useState("")
     const [locationTerm, setLocationTerm] = useState("")
 
@@ -167,7 +175,11 @@ export default function ProvidersPage() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                         {filteredProviders.map((provider) => (
-                            <Card key={provider.id} className="hover:shadow-md transition-shadow cursor-pointer group border-slate-200">
+                            <Card
+                                key={provider.id}
+                                className="hover:shadow-md transition-shadow cursor-pointer group border-slate-200"
+                                onClick={() => router.push(`/providers/${provider.id}`)}
+                            >
                                 <CardContent className="p-5">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex gap-4">
@@ -209,14 +221,33 @@ export default function ProvidersPage() {
                                             </span>
                                         ))}
                                     </div>
+
+                                    {/* Badges Section */}
+                                    {provider.badges && (
+                                        <div className="flex gap-2 mb-2">
+                                            {provider.badges.map((badge: any) => (
+                                                <div key={badge.name} className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 ${badge.color}`}>
+                                                    <span>{badge.icon}</span> {badge.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </CardContent>
                                 <CardFooter className="p-5 pt-0 border-t bg-slate-50/50 rounded-b-xl flex items-center justify-between">
                                     <span className="font-semibold text-slate-900">{provider.price}</span>
-                                    <Link href={`/providers/${provider.id}`}>
-                                        <Button size="sm" variant="ghost" className="text-teal-700 hover:text-teal-800 hover:bg-teal-50 p-0 h-auto font-medium">
-                                            View Profile <ArrowRight className="h-4 w-4 ml-1" />
-                                        </Button>
-                                    </Link>
+                                    <div className="flex gap-2">
+                                        <BookingModal
+                                            providerId={provider.id}
+                                            providerName={provider.name}
+                                            serviceName={provider.category}
+                                            basePrice={3500} // Mock base price for demo
+                                        />
+                                        <Link href={`/providers/${provider.id}`}>
+                                            <Button size="sm" variant="ghost" className="text-teal-700 hover:text-teal-800 hover:bg-teal-50 p-0 h-auto font-medium px-2">
+                                                Profile <ArrowRight className="h-4 w-4 ml-1" />
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </CardFooter>
                             </Card>
                         ))}

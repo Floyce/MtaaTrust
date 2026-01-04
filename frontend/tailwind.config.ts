@@ -10,23 +10,39 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#0F766E", // Teal 700
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--mt-green-700)", // #0D8A43
+          foreground: "var(--mt-white)",
+          900: "var(--mt-green-900)",
+          700: "var(--mt-green-700)",
+          500: "var(--mt-green-500)",
+          300: "var(--mt-green-300)",
+          100: "var(--mt-green-100)",
         },
         secondary: {
-          DEFAULT: "#F59E0B", // Amber 500
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--mt-warning)", // #F59E0B
+          foreground: "var(--mt-black)",
         },
-        background: "#F8FAFC", // Slate 50
-        surface: "#FFFFFF", // Card Background (White)
+        background: "var(--mt-cream)", // #FFF9E6
+        surface: "var(--mt-white)", // #FFFFFF
         text: {
-          primary: "#1E293B", // Slate 800
-          secondary: "#64748B", // Slate 500
+          primary: "var(--mt-black)", // #1A1A1A
+          secondary: "var(--mt-gray-500)", // #666666
         },
-        success: "#10B981", // Emerald 500
-        warning: "#F97316", // Orange 500
-        error: "#EF4444", // Red 500
-        info: "#3B82F6", // Blue 500
+        muted: "var(--mt-gray-100)",
+        success: "var(--mt-success)",
+        warning: "var(--mt-warning)",
+        error: "var(--mt-error)",
+        info: "var(--mt-info)",
+      },
+    },
+    animation: {
+      "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      "shimmer": "shimmer 2s linear infinite",
+    },
+    keyframes: {
+      shimmer: {
+        "0%": { backgroundPosition: "0 0" },
+        "100%": { backgroundPosition: "-200% 0" },
       },
     },
   },

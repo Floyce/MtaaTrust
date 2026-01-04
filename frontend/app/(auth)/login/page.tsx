@@ -5,10 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label" // We need to check if we have this, if not I'll just use standard label or create it if I can access create_file
-// Actually I don't recall seeing a Label component in the list. I will use standard html label or create one.
-// The user said: "Create reusable UI components (Buttons, Cards, Inputs) <!-- id: 15 --> [x]"
-// I'll assume Label isn't there and use standard <label> with tailwind classes.
+import { api } from "@/lib/api"
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false)
@@ -17,18 +14,41 @@ export default function LoginPage() {
         event.preventDefault()
         setIsLoading(true)
 
-        // TODO: Integrate with backend login API
-        setTimeout(() => {
+        try {
+            const formData = new FormData(event.target as HTMLFormElement)
+            const email = formData.get("email") as string
+            const password = formData.get("password") as string
+
+            const data = await api.post<{ access_token: string }>("/auth/login", {
+                login_identifier: email,
+                password,
+            })
+
+            localStorage.setItem("access_token", data.access_token)
+
+            // Get user profile to determine type
+            const user = await api.get<{ user_type: string }>("/users/me")
+            // Cache user data for immediate use in Navbar
+            localStorage.setItem("user_data", JSON.stringify(user))
+
+            if (user.user_type === "provider") {
+                window.location.href = "/provider-dashboard"
+            } else {
+                window.location.href = "/dashboard"
+            }
+
+        } catch (error: any) {
+            alert(error.message || "Login failed")
+        } finally {
             setIsLoading(false)
-            alert("Login simulation: Success!")
-        }, 1500)
+        }
     }
 
     return (
         <Card className="border-none shadow-none bg-transparent">
             <CardHeader className="space-y-1 px-0">
                 <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
-                    Karibu Tena! 
+                    Karibu Tena!
                 </CardTitle>
                 <CardDescription className="text-slate-500">
                     Enter your phone or email to access your account
@@ -43,6 +63,7 @@ export default function LoginPage() {
                             </label>
                             <Input
                                 id="email"
+                                name="email" // Added name attribute
                                 placeholder="07XX XXX XXX or name@example.com"
                                 type="text"
                                 autoCapitalize="none"
@@ -63,6 +84,7 @@ export default function LoginPage() {
                             </div>
                             <Input
                                 id="password"
+                                name="password"
                                 type="password"
                                 autoComplete="current-password"
                                 disabled={isLoading}
