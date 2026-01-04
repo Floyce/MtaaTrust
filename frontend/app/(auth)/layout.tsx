@@ -36,11 +36,7 @@ export default function AuthLayout({
                 <div className="w-full max-w-md space-y-8">
                     {children}
 
-                    <div className="text-center">
-                        <Link href="/" className="text-sm text-slate-500 hover:text-teal-600">
-                            &larr; Back to Home
-                        </Link>
-                    </div>
+
                 </div>
             </div>
         </div>

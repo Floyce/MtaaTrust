@@ -9,7 +9,7 @@ import { Check, User, Briefcase, ChevronRight, Loader2, X, Eye, EyeOff } from "l
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { api } from "@/lib/api"
 
 export default function RegisterPage() {
@@ -28,6 +28,19 @@ export default function RegisterPage() {
     const [hasNumber, setHasNumber] = useState(false)
     const [hasSpecialChar, setHasSpecialChar] = useState(false)
     const [hasUppercase, setHasUppercase] = useState(false)
+
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const typeParam = searchParams.get('type')
+        if (typeParam === 'consumer') {
+            setUserType('consumer')
+            setStep('form')
+        } else if (typeParam === 'provider') {
+            setUserType('provider')
+            setStep('form')
+        }
+    }, [searchParams])
 
     useEffect(() => {
         // Detailed validation
@@ -124,9 +137,9 @@ export default function RegisterPage() {
                     >
                         <div className="text-center space-y-2">
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-600">
-                                Welcome to MtaaTrust
+                                Find local pros that you can trust
                             </h1>
-                            <p className="text-slate-600 text-lg">How will you use the platform?</p>
+                            <p className="text-slate-600 text-lg">Join the most trusted community in Nairobi.</p>
                         </div>
 
                         <div className="grid gap-4">
@@ -232,6 +245,32 @@ export default function RegisterPage() {
                                             <Input id="phone" name="phone" type="tel" placeholder="0712 345 678" required className="h-11 bg-slate-50" />
                                         </div>
                                     </div>
+
+                                    {/* Provider Validation Questions */}
+                                    {userType === 'provider' && (
+                                        <div className="grid grid-cols-2 gap-4 bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                            <div className="space-y-2 col-span-2">
+                                                <h4 className="font-bold text-amber-800 text-sm flex items-center gap-2">
+                                                    <Briefcase className="h-4 w-4" /> Professional Details
+                                                </h4>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium leading-none text-amber-900">Primary Service</label>
+                                                <select name="service_category" className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" required>
+                                                    <option value="">Select...</option>
+                                                    <option value="plumbing">Plumbing</option>
+                                                    <option value="electrical">Electrical</option>
+                                                    <option value="medical">Medical / Nursing</option>
+                                                    <option value="cleaning">Cleaning</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium leading-none text-amber-900">Experience (Yrs)</label>
+                                                <Input name="experience" type="number" min="0" placeholder="e.g. 5" className="bg-white border-amber-200" required />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium leading-none">Password</label>

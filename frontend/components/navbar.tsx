@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ShieldCheck, Menu, X, Home, Search, Briefcase, MessageSquare, User, Calendar } from "lucide-react";
+import { ShieldCheck, Menu, X, Home, Search, Briefcase, MessageSquare, User, Calendar, ChevronDown, Camera, DollarSign, Wifi, Users } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -98,6 +98,40 @@ export function Navbar() {
                         <>
                             <NavTab href={user.user_type === 'provider' ? "/provider-dashboard" : "/"}>Dashboard</NavTab>
                             <NavTab href="/providers">Find Pros</NavTab>
+
+                            {/* Features Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary hover:bg-green-50/50 px-3 py-2 rounded-md outline-none transition-colors">
+                                    Features <ChevronDown className="h-4 w-4" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="w-48">
+                                    <DropdownMenuItem onClick={() => router.push('/scan')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-green-100 p-1 rounded"><Camera className="h-4 w-4 text-green-700" /></div>
+                                            <span>Mtaa Scan AI</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/sambaza')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-indigo-100 p-1 rounded"><Users className="h-4 w-4 text-indigo-700" /></div>
+                                            <span>Sambaza Deals</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/pesa-predict')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-amber-100 p-1 rounded"><DollarSign className="h-4 w-4 text-amber-700" /></div>
+                                            <span>Pesa Predict</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/mesh')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-slate-100 p-1 rounded"><Wifi className="h-4 w-4 text-slate-700" /></div>
+                                            <span>Mtaa Mesh</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
                             <NavTab href="/my-jobs">My Jobs</NavTab>
                             <NavTab href="/messages">Messages</NavTab>
                         </>
@@ -105,6 +139,32 @@ export function Navbar() {
                         <>
                             <NavTab href="/">Home</NavTab>
                             <NavTab href="/providers">Find Pros</NavTab>
+                            {/* Features Dropdown for Guests too */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary hover:bg-green-50/50 px-3 py-2 rounded-md outline-none transition-colors">
+                                    Features <ChevronDown className="h-4 w-4" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="w-48">
+                                    <DropdownMenuItem onClick={() => router.push('/scan')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-green-100 p-1 rounded"><Camera className="h-4 w-4 text-green-700" /></div>
+                                            <span>Mtaa Scan AI</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/pesa-predict')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-amber-100 p-1 rounded"><DollarSign className="h-4 w-4 text-amber-700" /></div>
+                                            <span>Pesa Predict</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/mesh')}>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-slate-100 p-1 rounded"><Wifi className="h-4 w-4 text-slate-700" /></div>
+                                            <span>Mtaa Mesh</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             <NavTab href="/#how-it-works">How it Works</NavTab>
                         </>
                     )}

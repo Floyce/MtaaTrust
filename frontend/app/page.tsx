@@ -3,78 +3,31 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Search, AlertTriangle, Users, Briefcase, ChevronRight, Star, Clock, Shield, CheckCircle } from "lucide-react"
 import { Navbar } from "@/components/navbar"
-import { MapPin, Search, Star, Shield, CheckCircle, Clock, AlertCircle, Camera, Users, CreditCard, ChevronRight, CheckCircle2 } from "lucide-react"
-import { motion, useScroll, useTransform, Variants } from "framer-motion"
-import { TypingText } from "@/components/typing-text"
 import Link from "next/link"
-import { api } from "@/lib/api"
-import { EmergencySOSDialog } from "@/components/emergency-sos-dialog"
+import { useAuth } from "@/hooks/use-auth"
+import { useRouter } from "next/navigation"
 
-// Mock Data for Dashboard
-const MOCK_BOOKINGS = [
-  {
-    id: "BK-7890",
-    provider: "Juma's Electricals",
-    service: "Electrical Repair",
-    date: "Today, 2:00 PM",
-    status: "confirmed",
-    amount: "KES 1500",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juma"
-  },
-  {
-    id: "BK-1234",
-    provider: "Sparkle Clean Services",
-    service: "Home Cleaning",
-    date: "Sat, 28th Oct",
-    status: "completed",
-    amount: "KES 3000",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
-  }
+// Mock Data for "My Active Jobs"
+const ACTIVE_JOBS = [
+  { id: 1, service: "Plumbing Repair", provider: "John Mwangi", status: "In Progress", date: "Today, 2:00 PM" },
 ]
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null)
-  const [bookings, setBookings] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const { user, loading } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
-    // Check local storage directly for immediate feedback
-    const userData = localStorage.getItem("user_data")
-    if (userData) {
-      setUser(JSON.parse(userData))
-      fetchBookings()
-    } else {
-      setLoading(false)
+    // Redirect Provider to their specific dashboard
+    if (!loading && user && user.user_type === 'provider') {
+      router.push("/provider-dashboard")
     }
-  }, [])
+  }, [user, loading, router])
 
-  async function fetchBookings() {
-    try {
-      const data = await api.get<any[]>("/bookings/")
-      setBookings(data.length > 0 ? data : MOCK_BOOKINGS)
-    } catch (error) {
-      setBookings(MOCK_BOOKINGS)
-    } finally {
-      setLoading(false)
-    }
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
   }
-
-  // Animation Hooks for Guest View
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.2 } }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
-  };
 
   // --------------------------------------------------------------------------
   // CONSUMER DASHBOARD VIEW (Logged In)
@@ -83,7 +36,6 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-neutral-50 font-sans">
         <Navbar />
-
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Welcome Section */}
           <div className="mb-8 flex justify-between items-end">
@@ -93,7 +45,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Search Bar - Adding per request for 'Homepage Lite' feel */}
+          {/* Search Bar */}
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-200 mb-8 flex flex-col md:flex-row gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -105,122 +57,108 @@ export default function Home() {
             <Button className="h-11 px-8 font-bold bg-primary hover:bg-emerald-800">Search</Button>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Left Column: Active Jobs & Activity */}
-            <div className="lg:col-span-2 space-y-8">
-
-              {/* Section 1: Active Jobs */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-neutral-800">Active Jobs</h2>
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <Link href="/scan" className="group">
+              <div className="bg-white hover:bg-green-50 p-4 rounded-xl border border-neutral-200 transition-all cursor-pointer h-full">
+                <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Briefcase className="h-6 w-6 text-green-700" />
                 </div>
+                <h3 className="font-bold text-neutral-800">Mtaa Scan</h3>
+                <p className="text-xs text-neutral-500">Diagnose issues with AI</p>
+              </div>
+            </Link>
 
-                <div className="space-y-4">
-                  {bookings.filter(b => b.status === 'confirmed').map((booking) => (
-                    <Card key={booking.id} className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start">
-                          <div className="flex gap-4">
-                            <img src={booking.image} alt="Provider" className="h-12 w-12 rounded-full bg-neutral-100" />
-                            <div>
-                              <h3 className="font-bold text-neutral-900">{booking.service}</h3>
-                              <p className="text-sm text-neutral-500">with {booking.provider}</p>
-                              <div className="flex items-center gap-2 mt-2 text-sm text-green-700 bg-green-50 w-fit px-2 py-1 rounded">
-                                <Clock className="h-4 w-4" />
-                                {booking.date}
-                              </div>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="outline">View Details</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {bookings.filter(b => b.status === 'confirmed').length === 0 && (
-                    <Card className="bg-neutral-50 border-dashed">
-                      <CardContent className="p-8 text-center text-neutral-500">
-                        <p>No active jobs right now.</p>
-                        <Link href="/providers">
-                          <Button className="mt-4 bg-green-600 hover:bg-green-700">Find a Pro</Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  )}
+            <Link href="/sambaza" className="group">
+              <div className="bg-white hover:bg-green-50 p-4 rounded-xl border border-neutral-200 transition-all cursor-pointer h-full">
+                <div className="h-10 w-10 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Users className="h-6 w-6 text-indigo-700" />
                 </div>
-              </section>
+                <h3 className="font-bold text-neutral-800">Group Booking</h3>
+                <p className="text-xs text-neutral-500">Share & save on repairs</p>
+              </div>
+            </Link>
 
-              {/* Section 2: Recent Activity */}
-              <section>
-                <h2 className="text-xl font-bold text-neutral-800 mb-4">Recent Activity</h2>
-                <Card>
-                  <CardContent className="p-0">
-                    {[
-                      { text: "Payment of KES 3,000 to Sparkle Clean", date: "2 days ago", icon: CreditCard, color: "text-blue-600 bg-blue-100" },
-                      { text: "You rated Pete the Plumber 5 stars", date: "1 week ago", icon: CheckCircle2, color: "text-amber-600 bg-amber-100" }
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-4 p-4 border-b last:border-0 hover:bg-neutral-50 transition-colors">
-                        <div className={`p-2 rounded-full ${item.color}`}>
-                          <item.icon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-neutral-900">{item.text}</p>
-                          <p className="text-xs text-neutral-500">{item.date}</p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-neutral-300" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </section>
-
+            <div className="bg-white hover:bg-red-50 p-4 rounded-xl border border-neutral-200 transition-all cursor-pointer group">
+              <div className="h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="font-bold text-neutral-800">Emergency SOS</h3>
+              <p className="text-xs text-neutral-500">Immediate help nearby</p>
             </div>
 
-            {/* Right Column: Quick Actions */}
-            <div className="space-y-6">
-              <section>
-                <h2 className="text-xl font-bold text-neutral-800 mb-4">Need Help?</h2>
-                <div className="grid gap-4">
-                  {/* SOS Button - Pulsating */}
-                  <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-red-500 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse-slow"></div>
-                    <div className="relative">
-                      <QuickActionCard
-                        icon={AlertCircle}
-                        title="Emergency SOS"
-                        desc="Immediate help for danger"
-                        color="text-red-600 bg-red-50 hover:bg-red-100 border-red-200"
-                        action={<EmergencySOSDialog />}
-                      />
+            <div className="bg-white hover:bg-green-50 p-4 rounded-xl border border-neutral-200 transition-all cursor-pointer group flex flex-col justify-center items-center border-dashed">
+              <span className="text-sm font-medium text-neutral-400 group-hover:text-primary">More Features +</span>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Left Col: Active Jobs & Feed */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Active Job Card */}
+              <div className="bg-white rounded-2xl p-6 border border-neutral-200/60 shadow-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-bold text-lg text-neutral-800 flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-amber-500" /> Active Jobs
+                  </h2>
+                  <Button variant="link" className="text-primary">View All</Button>
+                </div>
+
+                {ACTIVE_JOBS.map(job => (
+                  <div key={job.id} className="flex flex-col md:flex-row gap-4 items-start md:items-center p-4 bg-neutral-50 rounded-xl border border-neutral-100">
+                    <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center border text-lg">🔧</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-neutral-800">{job.service}</h4>
+                      <div className="flex items-center gap-2 text-sm text-neutral-500">
+                        <span>{job.provider}</span>
+                        <span>•</span>
+                        <span className="text-amber-600 font-medium">{job.status}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-neutral-900">{job.date}</p>
+                      <Button size="sm" variant="outline" className="mt-1 h-8">Track Provider</Button>
                     </div>
                   </div>
-                  <Link href="/sambaza">
-                    <QuickActionCard
-                      icon={Users}
-                      title="Group Booking"
-                      desc="Save up to 30% with neighbors"
-                      color="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border-indigo-200"
-                    />
-                  </Link>
-                  <Link href="/scan">
-                    <QuickActionCard
-                      icon={Camera}
-                      title="Scan Problem"
-                      desc="AI Diagnosis & Quote"
-                      color="text-green-600 bg-green-50 hover:bg-green-100 border-green-200"
-                    />
-                  </Link>
-                </div>
-              </section>
+                ))}
+              </div>
 
-              {/* Promo Card */}
-              <Card className="bg-gradient-to-br from-amber-400 to-orange-500 text-white border-none overflow-hidden relative">
-                <CardContent className="p-6 relative z-10">
-                  <h3 className="font-bold text-lg mb-2">Refer a Neighbor</h3>
-                  <p className="text-amber-50 text-sm mb-4">Get KES 500 for every friend who books their first service.</p>
-                  <Button variant="secondary" className="w-full text-amber-700 hover:text-amber-800 font-bold">Invite Friends</Button>
-                </CardContent>
-                <div className="absolute -right-6 -bottom-6 h-32 w-32 bg-white/20 rounded-full blur-2xl"></div>
-              </Card>
+              {/* Cashback Promo */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
+                <h2 className="font-bold text-lg text-green-900 mb-2">Did you know?</h2>
+                <p className="text-green-800/80 mb-4">You can now pay for services using MtaaCoins and get 5% cashback on every repair.</p>
+                <Button className="bg-green-700 hover:bg-green-800 text-white border-none shadow-lg shadow-green-900/20">Check Wallet</Button>
+              </div>
+            </div>
+
+            {/* Right Col: Suggestions */}
+            <div className="space-y-6">
+              <div className="bg-slate-900 text-white rounded-2xl p-6 relative overflow-hidden">
+                <div className="relative z-10">
+                  <h3 className="font-bold text-xl mb-1">Invite a Neighbor</h3>
+                  <p className="text-slate-300 text-sm mb-4">Get KES 500 for every neighbor who books a job.</p>
+                  <Button variant="secondary" className="w-full font-bold">Copy Invite Link</Button>
+                </div>
+                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 border border-neutral-200/60 shadow-sm">
+                <h3 className="font-bold text-neutral-800 mb-4 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current" /> Top Pros Nearby
+                </h3>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="h-10 w-10 bg-neutral-100 rounded-full"></div>
+                      <div>
+                        <p className="font-bold text-sm text-neutral-800">Sarah K.</p>
+                        <p className="text-xs text-neutral-500">Cleaner • Westlands</p>
+                      </div>
+                      <Button size="icon" variant="ghost" className="ml-auto text-neutral-400 hover:text-primary"><ChevronRight className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -229,356 +167,112 @@ export default function Home() {
   }
 
   // --------------------------------------------------------------------------
-  // GUEST LANDING PAGE
+  // PUBLIC LANDING PAGE VIEW (Guest)
   // --------------------------------------------------------------------------
   return (
-    <main className="min-h-screen bg-background flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden bg-background">
-        {/* Abstract Background Shapes */}
-        <motion.div
-          style={{ y: y1, x: -50 }}
-          className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"
-        />
-        <motion.div
-          style={{ y: y2, x: 100 }}
-          className="absolute top-20 right-0 w-[30rem] h-[30rem] bg-secondary/10 rounded-full blur-3xl -z-10"
-        />
+      <section className="relative pt-20 pb-32 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-50 via-white to-white -z-10"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-100/50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
 
-        <div className="container mx-auto px-4 text-center z-10 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-primary tracking-tight leading-tight">
-              Find Trusted Local Pros,<br />
-              <span className="text-secondary inline-block min-w-[300px]">
-                <TypingText texts={["Built on Community Trust", "Verified by Experts", "Available Instantly"]} />
-              </span>
-            </h1>
-          </motion.div>
+        <div className="container mx-auto px-4 text-center max-w-5xl">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-100 text-green-700 font-medium text-sm mb-8 animate-in fade-in slide-in-from-bottom-4">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            Live in Nairobi, Kiambu & Machakos
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-lg md:text-xl mb-10 text-text-secondary max-w-2xl mx-auto"
-          >
-            Connect with community-vetted plumbers, electricians, and technicians in Nairobi. Real trust scores, real reviews.
-          </motion.p>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+            Trusted Pros for <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-600">Every Task.</span>
+          </h1>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-primary/10 flex flex-col md:flex-row gap-3"
-          >
-            <div className="flex-1 relative group">
-              <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-primary/60 group-hover:text-primary transition-colors" />
-              <Input
-                placeholder="Suburb (e.g. Westlands, Kilimani)"
-                className="pl-10 border-none bg-primary/5 h-12 focus-visible:ring-1 focus-visible:ring-primary rounded-xl transition-all"
-              />
-            </div>
-            <div className="flex-1 relative group">
-              <Search className="absolute left-3 top-3.5 h-5 w-5 text-primary/60 group-hover:text-primary transition-colors" />
-              <Input
-                placeholder="Service (e.g. Plumbing)"
-                className="pl-10 border-none bg-primary/5 h-12 focus-visible:ring-1 focus-visible:ring-primary rounded-xl transition-all"
-              />
-            </div>
-            <Link href="/providers">
-              <Button size="lg" className="w-full md:w-auto h-12 px-8 bg-primary hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-105 active:scale-95">
-                Find a Pro
+          <p className="text-xl text-neutral-500 mb-10 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            From leaking taps to full home renovations. Connect with vetted, local experts in minutes. Safe, reliable, and insured.
+          </p>
+
+          {/* New Gateway Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+            <Link href="/register?type=consumer">
+              <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:-translate-y-1">
+                I Need a Service
               </Button>
             </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Categories with Staggered Reveal */}
-      <section className="py-20 bg-white relative">
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="text-secondary font-bold uppercase tracking-wider text-sm mb-2 block">Our Services</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary">Popular Categories</h2>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-5 gap-6"
-          >
-            {['Plumbing', 'Electrical', 'Painting', 'Cleaning', 'Carpentry'].map((cat, i) => (
-              <motion.div key={cat} variants={itemVariants}>
-                <Card className="hover:shadow-2xl cursor-pointer transition-all hover:-translate-y-2 border-none shadow-md bg-slate-50 group overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <CardContent className="flex flex-col items-center justify-center p-6 h-32 relative z-10">
-                    {/* Replace with actual icons later */}
-                    <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <span className="text-2xl text-primary">
-                        {['🚿', '⚡', '🎨', '🧹', '🔨'][i]}
-                      </span>
-                    </div>
-                    <span className="font-semibold text-text-primary group-hover:text-primary transition-colors">{cat}</span>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* How it Works - Scroll Triggered */}
-      <section id="how-it-works" className="py-24 bg-background overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary">How MtaaTrust Works</h2>
+            <Link href="/register?type=provider">
+              <Button variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full border-2 hover:bg-neutral-50 transition-all hover:-translate-y-1">
+                I Offer Services
+              </Button>
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              { title: "Search", desc: "Find pros in your specific suburb.", icon: Search, color: "bg-blue-100 text-blue-600" },
-              { title: "Verify", desc: "Check community trust scores & reviews.", icon: Shield, color: "bg-emerald-100 text-emerald-600" },
-              { title: "Book", desc: "Securely book & pay via M-Pesa.", icon: CheckCircle, color: "bg-amber-100 text-amber-600" }
-            ].map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
-                className="text-center px-6 relative"
-              >
-                {/* Connecting lines for desktop */}
-                {i !== 2 && (
-                  <div className="hidden md:block absolute top-10 -right-6 w-12 h-0.5 bg-slate-200" />
-                )}
-                <div className={`w-20 h-20 ${step.color} rounded-2xl rotate-3 flex items-center justify-center mx-auto mb-6 shadow-lg hover:rotate-6 transition-transform duration-300`}>
-                  <step.icon className="h-10 w-10" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-text-primary">{step.title}</h3>
-                <p className="text-text-secondary leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
+          {/* Stats / Trust Badges */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 border-t border-neutral-100 pt-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+            <div className="text-center">
+              <div className="flex justify-center mb-2 text-primary"><Shield className="h-6 w-6" /></div>
+              <div className="font-bold text-2xl text-neutral-900">100%</div>
+              <div className="text-sm text-neutral-500">Vetted Pros</div>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-2 text-primary"><Clock className="h-6 w-6" /></div>
+              <div className="font-bold text-2xl text-neutral-900">1hr</div>
+              <div className="text-sm text-neutral-500">Avg. Response</div>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-2 text-primary"><CheckCircle className="h-6 w-6" /></div>
+              <div className="font-bold text-2xl text-neutral-900">5k+</div>
+              <div className="text-sm text-neutral-500">Jobs Done</div>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-2 text-primary"><Search className="h-6 w-6" /></div>
+              <div className="font-bold text-2xl text-neutral-900">50+</div>
+              <div className="text-sm text-neutral-500">Service Types</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Providers - 3D Hover Effect */}
-      <section className="py-24 bg-white">
+      {/* Featured Services (Brief) */}
+      <section className="py-20 bg-neutral-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <span className="text-secondary font-bold uppercase tracking-wider text-sm mb-2 block">Top Rated</span>
-              <h2 className="text-3xl font-bold text-text-primary">Community-Vetted Pros</h2>
+              <h2 className="text-3xl font-bold text-neutral-900 mb-4">Popular Services</h2>
+              <p className="text-neutral-500 max-w-xl">Most requested services in your area this week.</p>
             </div>
-            <Link href="/providers">
-              <Button variant="outline" className="text-primary border-primary hover:bg-primary/5 font-semibold">View All</Button>
-            </Link>
+            <Button variant="link" className="text-primary hidden md:flex">View all categories &rarr;</Button>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 perspective-1000">
-            {[1, 2, 3].map((i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                whileHover={{
-                  y: -10,
-                  rotateY: 5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)"
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-                viewport={{ once: true }}
-                className="transform-style-3d cursor-pointer"
-              >
-                <Card className="overflow-hidden border-none shadow-lg h-full bg-white">
-                  <div className="h-44 bg-slate-900 w-full relative">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                      <div className="bg-white/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded text-slate-900 uppercase tracking-wide">
-                        {['Plumber', 'Electrician', 'Carpenter'][i - 1]}
-                      </div>
-                    </div>
-                  </div>
-                  <CardHeader className="pb-2 pt-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-xl text-slate-900 group-hover:text-primary transition-colors">
-                          {['John Kamau', 'Sarah Wanjiku', 'David Omondi'][i - 1]}
-                        </h3>
-                        <p className="text-sm text-text-secondary flex items-center gap-1 mt-1">
-                          <MapPin className="h-3 w-3" /> {['Kilimani', 'Westlands', 'Karen'][i - 1]}
-                        </p>
-                      </div>
-                      <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full flex items-center gap-1 font-bold">
-                        <Shield className="h-3 w-3" /> VERIFIED
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-2 mb-4 bg-slate-50 p-2 rounded-lg">
-                      <div className="flex items-center text-secondary">
-                        <Star className="h-4 w-4 fill-current" />
-                        <span className="font-bold ml-1 text-slate-900">4.{9 - i}</span>
-                      </div>
-                      <span className="text-xs text-text-secondary pb-0.5">• 1{i}2 reviews</span>
-                    </div>
-
-                    <div className="space-y-3 text-sm text-text-secondary mb-6">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-4 w-4 text-emerald-500" />
-                        <span>98% Rehire Rate</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4 text-primary" />
-                        <span>Responds in &lt; 30 mins</span>
-                      </div>
-                    </div>
-
-                    <Link href={`/providers/${i}`}>
-                      <Button className="w-full bg-slate-900 text-white hover:bg-primary transition-colors">
-                        View Profile
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {['Plumbing', 'Electrical', 'Cleaning', 'Moving'].map((service, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200/50 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="h-12 w-12 bg-green-50 rounded-xl mb-4 flex items-center justify-center text-2xl">
+                  {i === 0 ? '💧' : i === 1 ? '⚡' : i === 2 ? '✨' : '🚚'}
+                </div>
+                <h3 className="font-bold text-lg text-neutral-900 mb-1">{service}</h3>
+                <p className="text-sm text-neutral-500">Starting at KES 500</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Modern CTA */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary skew-y-3 transform origin-bottom-right scale-110"></div>
+      {/* CTA Section */}
+      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-slate-800/50 skew-x-12 translate-x-1/4"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Join the MtaaTrust Community</h2>
-            <p className="text-white/90 mb-10 max-w-2xl mx-auto text-xl">
-              Build your reputation and get hired by reliability, not just lowest price.
-              <br />Instant payments via M-Pesa.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register?type=provider">
-                <Button size="lg" variant="secondary" className="px-8 font-bold text-lg h-14 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all">
-                  List Your Service
-                </Button>
-              </Link>
-              <Link href="/register?type=consumer">
-                <Button size="lg" className="px-8 font-bold text-lg h-14 bg-white/10 backdrop-blur-md border border-white/30 text-white hover:bg-white/20">
-                  I Need a Pro
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to get started?</h2>
+          <p className="text-slate-300 mb-10 text-lg max-w-2xl mx-auto">Join thousands of Kenyans finding trusted help and growing their businesses on MtaaTrust.</p>
+          <Link href="/register">
+            <Button size="lg" className="bg-primary hover:bg-emerald-500 text-white h-14 px-10 rounded-full font-bold text-lg">Create Free Account</Button>
+          </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-900">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-12">
-            <div>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="bg-primary text-white p-1 rounded">
-                  <Shield className="h-5 w-5" />
-                </div>
-                <h3 className="text-white font-bold text-xl">MtaaTrust</h3>
-              </div>
-              <p className="text-sm leading-relaxed">
-                Building trust in Kenyan local services through verification, community reviews, and secure payments.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-6">Platform</h4>
-              <ul className="space-y-3 text-sm">
-                <li className="hover:text-primary cursor-pointer transition-colors">Browse Pros</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">How it Works</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">Pricing</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">Mtaa Scan AI <span className="text-[10px] bg-secondary text-white px-1 rounded ml-1">NEW</span></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-6">Support</h4>
-              <ul className="space-y-3 text-sm">
-                <li className="hover:text-primary cursor-pointer transition-colors">Help Center</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">Trust & Safety</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">Terms of Service</li>
-                <li className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-6">Contact</h4>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  support@mtaatrust.co.ke
-                </li>
-                <li>+254 700 000 000</li>
-                <li className="mt-4">
-                  <div className="flex gap-4">
-                    {/* Social Icons Placeholder */}
-                    <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary cursor-pointer transition-colors">X</div>
-                    <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary cursor-pointer transition-colors">In</div>
-                    <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary cursor-pointer transition-colors">Ig</div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-900 mt-16 pt-8 text-center text-sm flex justify-between items-center flex-col md:flex-row gap-4">
-            <p>© 2026 MtaaTrust. All rights reserved.</p>
-            <p className="flex items-center gap-2">
-              Made with <span className="text-red-500">♥</span> in Nairobi
-            </p>
-          </div>
-        </div>
-      </footer>
-    </main>
-  )
-}
-
-function QuickActionCard({ icon: Icon, title, desc, color, action }: any) {
-  if (action) {
-    return (
-      <div className={`flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer ${color}`}>
-        <div className="bg-white/80 p-2.5 rounded-lg shadow-sm">
-          <Icon className="h-6 w-6" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-bold">{title}</h3>
-          <p className="text-xs opacity-80">{desc}</p>
-        </div>
-        {action}
-      </div>
-    )
-  }
-  return (
-    <div className={`flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer ${color}`}>
-      <div className="bg-white/80 p-2.5 rounded-lg shadow-sm">
-        <Icon className="h-6 w-6" />
-      </div>
-      <div className="flex-1">
-        <h3 className="font-bold">{title}</h3>
-        <p className="text-xs opacity-80">{desc}</p>
-      </div>
-      <ChevronRight className="h-5 w-5 opacity-50" />
     </div>
   )
 }

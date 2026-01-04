@@ -12,7 +12,7 @@ import { Eye, EyeOff } from "lucide-react"
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
-    const [view, setView] = useState<"gateway" | "login">("gateway")
+    // Removed 'view' state, defaulting to login form directly
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -48,58 +48,11 @@ export default function LoginPage() {
         }
     }
 
-    if (view === "gateway") {
-        return (
-            <div className="space-y-8 animate-in fade-in zoom-in duration-500">
-                <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-bold text-slate-900">Get Started with MtaaTrust</h1>
-                    <p className="text-slate-600">Join the most trusted community in Nairobi.</p>
-                </div>
-
-                <div className="grid gap-4">
-                    <Link href="/register?type=consumer" className="w-full">
-                        <Button className="w-full h-20 text-xl font-bold bg-primary hover:bg-emerald-800 text-white rounded-2xl shadow-xl hover:scale-105 transition-all flex flex-col items-center justify-center gap-1">
-                            <span>I Need a Service 🛠️</span>
-                            <span className="text-xs font-normal opacity-80">Hire vetted pros instantly</span>
-                        </Button>
-                    </Link>
-
-                    <Link href="/register?type=provider" className="w-full">
-                        <Button variant="outline" className="w-full h-20 text-xl font-bold border-2 border-primary text-primary hover:bg-primary/5 rounded-2xl shadow-lg hover:scale-105 transition-all flex flex-col items-center justify-center gap-1 bg-white">
-                            <span>I Offer Services 💼</span>
-                            <span className="text-xs font-normal text-slate-500">Find jobs & get paid</span>
-                        </Button>
-                    </Link>
-                </div>
-
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-slate-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-slate-50 px-2 text-slate-500 font-medium">
-                            Returning User?
-                        </span>
-                    </div>
-                </div>
-
-                <Button
-                    variant="ghost"
-                    onClick={() => setView("login")}
-                    className="w-full text-primary font-bold hover:bg-primary/10 hover:text-primary h-12 text-base"
-                >
-                    Log In to Account
-                </Button>
-            </div>
-        )
-    }
-
     return (
         <Card className="border-none shadow-none bg-transparent animate-in slide-in-from-right duration-300">
             <CardHeader className="space-y-1 px-0">
-                <Button variant="ghost" className="w-fit p-0 h-auto mb-2 text-slate-500 hover:text-primary" onClick={() => setView("gateway")}>← Back</Button>
                 <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
-                    Karibu Tena!
+                    Welcome Back
                 </CardTitle>
                 <CardDescription className="text-slate-500">
                     Enter your phone or email to access your account
@@ -157,7 +110,6 @@ export default function LoginPage() {
                     </div>
                 </form>
             </CardContent>
-            {/* Footer removed as it is redundant now */}
         </Card>
     )
 }
