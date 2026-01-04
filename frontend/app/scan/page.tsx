@@ -62,7 +62,7 @@ export default function MtaaScanPage() {
             const formData = new FormData()
             formData.append("file", file)
 
-            const response = await api.post<ScanResult>("/scan/analyze", formData, undefined, true) // passing true force multipart
+            const response = await api.post<ScanResult>("/scan/analyze", formData, undefined) // passing true force multipart
             // Custom api wrapper might not handle FormData auto-content-type well depending on implementation
             // Assuming standard fetch or axios wrapper:
 

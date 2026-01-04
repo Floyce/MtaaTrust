@@ -83,7 +83,21 @@ export default function JifunzePage() {
     }
 
     // Wizard Logic
-    const WIZARD_QUESTIONS = [
+    // Wizard Logic
+    interface WizardOption {
+        label: string
+        value: string
+        icon?: any // using any for Icon component to avoid strict typing issues with Lucide icons
+        danger?: boolean
+    }
+
+    interface WizardQuestion {
+        key: string
+        question: string
+        options: WizardOption[]
+    }
+
+    const WIZARD_QUESTIONS: WizardQuestion[] = [
         {
             key: "category",
             question: "What kind of issue is it?",

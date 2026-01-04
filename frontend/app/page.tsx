@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
 import { MapPin, Search, Star, Shield, CheckCircle, Clock } from "lucide-react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform, Variants } from "framer-motion"
 import { TypingText } from "@/components/typing-text"
 import { useRef } from "react"
 import Link from "next/link"
@@ -15,7 +15,7 @@ export default function Home() {
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -25,7 +25,7 @@ export default function Home() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
   };

@@ -30,6 +30,12 @@ async function fetchAPI<T>(endpoint: string, options: RequestOptions = {}): Prom
         },
     };
 
+    // If body is FormData, let the browser set Content-Type!
+    if (config.body instanceof FormData && config.headers) {
+        const h = config.headers as Record<string, string>;
+        delete h["Content-Type"];
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
     if (!response.ok) {
@@ -42,7 +48,21 @@ async function fetchAPI<T>(endpoint: string, options: RequestOptions = {}): Prom
 
 export const api = {
     get: <T>(endpoint: string, options?: RequestOptions) => fetchAPI<T>(endpoint, { method: "GET", ...options }),
-    post: <T>(endpoint: string, body: any, options?: RequestOptions) => fetchAPI<T>(endpoint, { method: "POST", body: JSON.stringify(body), ...options }),
-    put: <T>(endpoint: string, body: any, options?: RequestOptions) => fetchAPI<T>(endpoint, { method: "PUT", body: JSON.stringify(body), ...options }),
+    post: <T>(endpoint: string, body: any, options?: RequestOptions) => {
+        const isFormData = body instanceof FormData;
+        return fetchAPI<T>(endpoint, {
+            method: "POST",
+            body: isFormData ? body : JSON.stringify(body),
+            ...options
+        });
+    },
+    put: <T>(endpoint: string, body: any, options?: RequestOptions) => {
+        const isFormData = body instanceof FormData;
+        return fetchAPI<T>(endpoint, {
+            method: "PUT",
+            body: isFormData ? body : JSON.stringify(body),
+            ...options
+        });
+    },
     delete: <T>(endpoint: string, options?: RequestOptions) => fetchAPI<T>(endpoint, { method: "DELETE", ...options }),
 };
