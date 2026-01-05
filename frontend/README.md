@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MtaaTrust 🛡️🛠️
 
-## Getting Started
+**Trusted Pros for Every Task.**  
+MtaaTrust is a next-generation home services marketplace connecting Kenyan households with vetted professionals.
 
-First, run the development server:
+> **Status:** 🚧 Alpha / Work In Progress (Paused for Exams - Jan 2026)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features Implemented
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Unified "Single-Page" Navigation
+- **Guest View:** Public landing page with "I Need a Service" and "I Offer Services" gateways.
+- **Consumer View:** Seamlessly transforms into a **Consumer Dashboard** upon login (Active Jobs, Quick Actions).
+- **Provider View:** Dedicated, professional separate dashboard at `/provider-dashboard`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Provider Onboarding Wizard
+- **Comprehensive 8-Step Flow** (`/provider/complete-profile`):
+  - Identity Verification (ID, Selfie logic)
+  - Service Specialization & Experience
+  - Location Mapping (Radius based)
+  - Pricing Models (Hourly vs Fixed)
+  - Portfolio Uploads
+- **Tech:** Uses `framer-motion` for smooth step transitions and state preservation.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Smart Verticals
+- **Mtaa Scan AI (`/scan`):** Mock AI tool to diagnose home repair issues via camera.
+- **Sambaza Deals (`/sambaza`):** Group booking logic for neighborhood discounts.
+- **Mtaa Mesh (`/mesh`):** Offline-first concept for finding pros without data.
+- **Pesa Predict (`/pesa-predict`):** Price estimation calculator.
 
-## Learn More
+### 4. Authentication & Roles
+- **Role-Based Routing:** Smart redirects ensure Consumers never see Provider tools and vice-versa.
+- **Gateway Registration:** Streamlined entry points for different user types.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
+- **Framework:** Next.js 14+ (App Router)
+- **Styling:** Tailwind CSS + Shadcn UI
+- **State/Auth:** React Context + Custom Hooks (`useAuth`)
+- **Backend:** (Currently using Mock API in `lib/api.ts` for frontend-only dev)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏃‍♂️ Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+2. **Run Development Server:**
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Explore:**
+   - **Guest:** Visit `http://localhost:3000`
+   - **Login:** Use the built-in Mock Auth (random credentials work) to test Consumer vs Provider roles.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 To-Do / Next Steps (On Resume)
+- [ ] Connect Real Backend (Supabase/Django/Node).
+- [ ] Implement actual File Uploads for Provider Onboarding.
+- [ ] Refine "Mtaa Scan" with real AI Vision API.
+- [ ] Polish Mobile Responsive adjustments for the Dashboard.
